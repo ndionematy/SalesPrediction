@@ -1,14 +1,25 @@
 import streamlit as st
 import dask.dataframe as dd
 import plotly.express as px
-import matplotlib.pyplot as plt
-import seaborn as sns
 import pandas as pd
 import ventes
 import shops
 import promos
+import gdown
+import os
 
-import streamlit as st
+# URL de partage Google Drive
+file_url = "https://drive.google.com/uc?export=download&id=1d5v1MI39-Nb6E9xxwd8QYPGserp-96L9"
+
+# Nom local pour enregistrer le fichier CSV
+csv_file = "train.csv"
+
+# Télécharger le fichier si nécessaire
+if not os.path.exists(csv_file):
+    gdown.download(file_url, csv_file, quiet=False)
+
+# Lire le fichier CSV avec Dask
+data = dd.read_csv(csv_file)
 
 # Configuration de la page
 st.set_page_config(
@@ -69,37 +80,33 @@ st.markdown(custom_css, unsafe_allow_html=True)
 st.sidebar.title("🛒 Favorita Grocery Stores")
 
 # Gestion des paramètres de navigation avec st.query_params
-params = st.query_params
+params = st.experimental_get_query_params()
 
 # Définir les pages avec les boutons
 if st.sidebar.button("🏠 Accueil"):
-    params["page"] = "accueil"
+    st.experimental_set_query_params(page="accueil")
 if st.sidebar.button("📊 Ventes"):
-    params["page"] = "ventes"
+    st.experimental_set_query_params(page="ventes")
 if st.sidebar.button("🎉 Promotions"):
-    params["page"] = "promotions"
+    st.experimental_set_query_params(page="promotions")
 if st.sidebar.button("🏢 Boutiques"):
-    params["page"] = "boutiques"
+    st.experimental_set_query_params(page="boutiques")
 
 # Récupération de la page active
-page = params.get("page", "accueil")
+page = params.get("page", ["accueil"])[0]
 
 st.markdown("""
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 """, unsafe_allow_html=True)
 
 # ------------------------ Contenu de la page Accueil ------------------------
-data = dd.read_csv('train_model.csv')
 data['date'] = dd.to_datetime(data['date'])
+
 def display_accueil():
     last_date = data['date'].max().compute()
-
     last_date_data = data[data['date'] == last_date]
     total_sales = last_date_data['unit_sales'].sum().compute()
-
     daily_sales = data.groupby('date')['unit_sales'].sum().compute()
-    # max_sales_date = daily_sales.idxmax()
-    # min_sales_date = daily_sales.idxmin()
     best_sales = daily_sales.max()
     least_sales = daily_sales.min()
 
@@ -149,7 +156,7 @@ def display_accueil():
     daily_df = daily_df.sort_values(by='date')
 
     # Créer le graphique avec Plotly
-    fig = px.line(daily_df, x='date', y='unit_sales', title='Sales Overview', 
+    fig = px.line(daily_df, x='date', y='unit_sales', title='Sales Overview',
                   labels={'unit_sales': 'Total Sales', 'date': 'Date'}, color_discrete_sequence=['rgb(0, 80, 100)'])
 
     # Ajouter des annotations pour rendre le graphique plus interactif
@@ -168,7 +175,6 @@ def display_accueil():
 
     # Afficher le graphique dans Streamlit
     st.plotly_chart(fig)
-
 
     # Regrouper les données par date et magasin et calculer la somme des ventes pour chaque date et magasin
     stores_sales = data.groupby(['date', 'store_nbr'])['unit_sales'].sum().compute().reset_index()
