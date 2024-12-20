@@ -1,4 +1,4 @@
-!pip install dask[dataframe]
+pip install dask[dataframe]
 
 import streamlit as st
 import dask.dataframe as dd
