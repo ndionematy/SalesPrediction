@@ -3,13 +3,12 @@ import dask.dataframe as dd
 import plotly.express as px
 import pandas as pd
 import ventes
-import shops
 import promos
 import gdown
 import os
 
 # URL de partage Google Drive
-file_url = "https://drive.google.com/file/d/1d5v1MI39-Nb6E9xxwd8QYPGserp-96L9/view?usp=sharing"
+file_url = "https://drive.google.com/uc?export=download&id=1d5v1MI39-Nb6E9xxwd8QYPGserp-96L9"
 
 # Nom local pour enregistrer le fichier CSV
 csv_file = "train.csv"
@@ -223,10 +222,7 @@ elif page == "ventes":
 elif page == "promotions":
     st.title("🎉Promotions")
     promos.display_promos()
-elif page == "boutiques":
-    st.title("🏢 Analyse des Boutiques")
-    shops.display_shops()
-
+    
 # ------------------------ Footer ------------------------
 st.markdown("---")
 st.markdown("Développé par **Mouhamadi Bassirou COMPAORE** et **Maty NDIONE**")
