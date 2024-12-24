@@ -65,6 +65,8 @@ The following machine learning models were implemented:
 ## Results
 The results demonstrate the importance of a well-documented and innovative sales strategy. The aim is not just to increase immediate sales figures but also to establish a sustainable framework for continuous growth and success.
 
+**XGBoost** proves to be more suitable, yielding lower errors compared to other models.
+
 ---
 
 ## Tools & Frameworks Used
